@@ -1,0 +1,49 @@
+<Project>
+	<Target Name="_SetExtensionProjectDefaults" BeforeTargets="PreBuildEvent" Condition="'$(IsExtensionProject)' == 'true'">
+		<PropertyGroup>
+			<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+			<EnableDynamicLoading>true</EnableDynamicLoading>
+		</PropertyGroup>
+		
+		<PropertyGroup Condition="'$(ExtensionPackageTargetConfiguration)' == ''">
+			<ExtensionPackageTargetConfiguration>Release</ExtensionPackageTargetConfiguration>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(ExtensionPackageTargetFramework)' == ''">
+			<ExtensionPackageTargetFramework>$(TargetFramework)</ExtensionPackageTargetFramework>
+		</PropertyGroup>
+
+		<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)' == '$(ExtensionPackageTargetConfiguration)|$(ExtensionPackageTargetFramework)'">
+			<GenerateExtensionPackage>true</GenerateExtensionPackage>
+		</PropertyGroup>
+
+		<ItemGroup>
+			<Content Include="Messages\*;Messages\**\*">
+				<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			</Content>
+		</ItemGroup>
+	</Target>
+	
+	<Target Name="_MakeTransitiveProjectRefsNonPrivate" AfterTargets="IncludeTransitiveProjectReferences" Condition="'$(GenerateExtensionPackage)' == 'true'">
+		<ItemGroup>
+			<!-- remove the transitive project references and re-add them as non-private project references -->
+			<ProjectReference Remove="@(_TransitiveProjectReferences)" />
+			<ProjectReference Include="@(_TransitiveProjectReferences)" Private="False" />
+		</ItemGroup>
+	</Target>
+
+	<Target Name="GenerateExtensionPackage" AfterTargets="PostBuildEvent" Condition="'$(GenerateExtensionPackage)' == 'true'">
+		<PropertyGroup Condition="'$(ExtensionPackageOutputDirectory)'==''">
+			<AppendTargetFrameworkToExtensionOutputPath Condition="'$(AppendTargetFrameworkToExtensionOutputPath)'==''">$(AppendTargetFrameworkToOutputPath)</AppendTargetFrameworkToExtensionOutputPath>
+			<ExtensionPackageOutputDirectory>$(BaseOutputPath)ext\$(Configuration)\</ExtensionPackageOutputDirectory>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(UseArtifactsOutput)' != 'true' and '$(AppendTargetFrameworkToExtensionOutputPath)' == 'true' and '$(TargetFramework)' != ''">
+			<ExtensionPackageOutputDirectory>$(ExtensionPackageOutputDirectory)$(TargetFramework.ToLowerInvariant())\</ExtensionPackageOutputDirectory>
+		</PropertyGroup>
+		<Message Importance="high" Text="Generating extension package in $(ExtensionPackageOutputDirectory)" />
+		<ItemGroup>
+			<ExtensionPackageFiles Include="$(OutDir)\*;$(OutDir)\**\*" />
+			<ExtensionPackageFiles Remove="*.pdb;**\*.pdb" />
+		</ItemGroup>
+		<Copy SourceFiles="@(ExtensionPackageFiles)" DestinationFolder="$(ExtensionPackageOutputDirectory)%(RecursiveDir)" />
+	</Target>
+</Project>
