@@ -1,0 +1,6 @@
+<Project>
+	<PropertyGroup>
+		<!-- Disable Visual Studio's build acceleration because it copies unwanted files -->
+		<AccelerateBuildsInVisualStudio>false</AccelerateBuildsInVisualStudio>
+	</PropertyGroup>
+</Project>
