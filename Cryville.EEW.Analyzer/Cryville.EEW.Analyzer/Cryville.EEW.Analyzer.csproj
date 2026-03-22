@@ -1,10 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>netstandard2.0</TargetFramework>
-		<Nullable>enable</Nullable>
-		<LangVersion>latest</LangVersion>
-		<AnalysisLevel>latest-all</AnalysisLevel>
+		<Description>Code analyzers that report potential issues related to CysTerra extension development.</Description>
+		
 		<IsPackable>false</IsPackable>
 
 		<EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
