@@ -2,7 +2,7 @@
 
 	<PropertyGroup>
 		<Description>The core components of the interface layer of CysTerra.</Description>
-		<Version>0.8.1</Version>
+		<Version>0.8.4</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
