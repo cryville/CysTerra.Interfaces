@@ -81,7 +81,7 @@ namespace Cryville.Packages {
 			await Task.WhenAll(pendingDependencies.Select(d => ResolveDependencyUrisAsync(d, result, cancellationToken))).ConfigureAwait(false);
 		}
 		bool ShouldDownload(string package, Dictionary<string, DownloadTask> result, Version requiredVersion) =>
-			(!_localRepo.TryGetLocalPackageVersion(package, out var installedVersion) || new Version(installedVersion) < requiredVersion) &&
+			(!_localRepo.TryGetLocalPackageVersion(package, out var installedVersion) || (installedVersion != null ? new Version(installedVersion) : null) < requiredVersion) &&
 			(!result.TryGetValue(package, out var existingTask) || existingTask.Version < requiredVersion);
 		async Task ResolveDependencyUrisAsync(DependencyInfo dependencyInfo, Dictionary<string, DownloadTask> result, CancellationToken cancellationToken) {
 			string package = dependencyInfo.Id;
@@ -101,7 +101,7 @@ namespace Cryville.Packages {
 
 		public HttpProgress Progress { get; private set; }
 
-		readonly static PropertyChangedEventArgs _Progress_PropertyChangedEventArgs = new(nameof(Progress));
+		static readonly PropertyChangedEventArgs _Progress_PropertyChangedEventArgs = new(nameof(Progress));
 		public event PropertyChangedEventHandler? PropertyChanged;
 
 		public bool IsCompletedSuccessfully { get; private set; }

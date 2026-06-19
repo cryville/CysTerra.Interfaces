@@ -1,0 +1,19 @@
+<Project>
+
+	<PropertyGroup>
+		<TargetFrameworks>netstandard2.1;net8.0</TargetFrameworks>
+		<Nullable>enable</Nullable>
+		<LangVersion>13.0</LangVersion>
+		<AnalysisLevel>10.0-all</AnalysisLevel>
+		<IsAotCompatible Condition="$(IsAotCompatible) == '' and $([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net7.0'))">true</IsAotCompatible>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference
+			Include="$(MSBuildThisFileDirectory)\..\Cryville.EEW.Analyzer\Cryville.EEW.Analyzer\Cryville.EEW.Analyzer.csproj"
+			PrivateAssets="all"
+			ReferenceOutputAssembly="false"
+			OutputItemType="Analyzer" />
+	</ItemGroup>
+
+</Project>

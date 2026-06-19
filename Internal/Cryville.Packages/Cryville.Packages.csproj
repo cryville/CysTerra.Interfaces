@@ -1,11 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>netstandard2.1</TargetFramework>
-		<Nullable>enable</Nullable>
-		<LangVersion>latest</LangVersion>
-		<AnalysisLevel>latest-all</AnalysisLevel>
 		<Version>0.0.1</Version>
+		<IsAotCompatible>false</IsAotCompatible>
 	</PropertyGroup>
 
 	<ItemGroup>
