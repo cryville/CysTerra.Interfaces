@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<Version>0.8.4</Version>
+		<RootNamespace>Cryville.EEW.Core</RootNamespace>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\Cryville.EEW\Cryville.EEW.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<!-- Restore runtimes of package references in Cryville.EEW -->
+		<PackageReference Include="Cryville.Common.Compat" Version="1.1.1" />
+		<PackageReference Include="System.ComponentModel.Composition" Version="8.0.0" />
+		<PackageReference Include="System.Text.Json" Version="10.0.1" />
+	</ItemGroup>
+
+</Project>
