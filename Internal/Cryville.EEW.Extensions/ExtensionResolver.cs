@@ -27,7 +27,7 @@ namespace Cryville.EEW.Extensions {
 			return _cachedAssemblyPaths = assemblyPaths;
 		}
 
-		T? GetAttrbute<T>(IEnumerable<CustomAttributeData> attrData, MetadataLoadContext context) where T : Attribute {
+		protected T? GetAttrbute<T>(IEnumerable<CustomAttributeData> attrData, MetadataLoadContext context) where T : Attribute {
 			var baseType = MapRuntimeToMetadataType(typeof(T), context);
 			if (baseType == null)
 				return null;
@@ -53,27 +53,29 @@ namespace Cryville.EEW.Extensions {
 			}
 			return result;
 		}
-		Type MapMetadataToRuntimeType(Type type) {
+		protected Type MapMetadataToRuntimeType(Type type) {
 			if (type.AssemblyQualifiedName is not string name || Type.GetType(name) is not Type result) {
 				throw new TypeLoadException(GetResolverMessage("ExtensionErrorUnsupportedAttribute"));
 			}
 			return result;
 		}
-		object? MapMetadataToRuntimeValue(object? obj) {
+		protected object? MapMetadataToRuntimeValue(object? obj) {
 			if (obj is Type type)
 				return MapMetadataToRuntimeType(type);
 			if (obj is Type[] types)
 				return types.Select(MapMetadataToRuntimeType).ToArray();
 			return obj;
 		}
-		static Type? MapRuntimeToMetadataType(Type type, MetadataLoadContext context) {
+		protected static Type? MapRuntimeToMetadataType(Type type, MetadataLoadContext context) {
 			var assembly = context.LoadFromAssemblyPath(type.Assembly.Location);
 			if (type.FullName is not string fullName)
 				return null;
 			var result = assembly.GetType(fullName);
 			return result;
 		}
-		public async Task<ExtensionInfo> ResolveDllAsync(string dllFile, DirectoryInfo dirInfo, string expectedAssemblyName, CancellationToken cancellationToken) {
+		public async Task<ExtensionInfo> ResolveDllAsync(string dllFile, DirectoryInfo dirInfo, string expectedAssemblyName, CancellationToken cancellationToken)
+			=> await ResolveDllAsync(dllFile, dirInfo, expectedAssemblyName, null, cancellationToken).ConfigureAwait(true);
+		public async Task<ExtensionInfo> ResolveDllAsync(string dllFile, DirectoryInfo dirInfo, string expectedAssemblyName, object? customInfo, CancellationToken cancellationToken) {
 			var resolver = new PathAssemblyResolver([dllFile, .. GetAssemblyPaths()]);
 			using var context = new MetadataLoadContext(resolver, typeof(object).Assembly.FullName);
 			using var fileStream = new FileStream(dllFile, FileMode.Open, FileAccess.Read, FileShare.Read);
@@ -95,7 +97,9 @@ namespace Cryville.EEW.Extensions {
 			var displayNameCulture = resScope.ReadLastReturnedCulture();
 			string? description = GetAttrbute<DescriptionAttribute>(attrData, context)?.Description ?? GetAttrbute<AssemblyDescriptionAttribute>(attrData, context)?.Description;
 			var descriptionCulture = resScope.ReadLastReturnedCulture();
+			ResolveCustomInfo(context, assembly, customInfo);
 			return new(name, displayName, displayNameCulture, description, descriptionCulture, version, hash, assembly.GetReferencedAssemblies());
 		}
+		protected virtual void ResolveCustomInfo(MetadataLoadContext context, Assembly assembly, object? customInfo) { }
 	}
 }
