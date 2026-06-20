@@ -75,7 +75,7 @@ namespace Cryville.Packages {
 			if (versionInfo.Dependencies is not { } dependencies)
 				return;
 			var pendingDependencies = new List<DependencyInfo>();
-			var packedDependecies = versionInfo.PackedDependecies ?? new HashSet<string>();
+			var packedDependecies = versionInfo.PackedDependencies ?? new HashSet<string>();
 			lock (result) {
 				foreach (var d in dependencies) {
 					string dependencyId = d.Id;

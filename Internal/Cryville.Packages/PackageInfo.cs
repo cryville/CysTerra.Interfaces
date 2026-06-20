@@ -31,7 +31,7 @@ namespace Cryville.Packages {
 		IDictionary<string, LocalizedMetadataValueCollection> Metadata,
 		IList<ResourceInfo>? Resources,
 		DependencyInfoCollection? Dependencies,
-		ISet<string>? PackedDependecies
+		ISet<string>? PackedDependencies
 	);
 
 	public class LocalizedMetadataValueCollection : KeyedCollection<string, LocalizedMetadataValue> {
