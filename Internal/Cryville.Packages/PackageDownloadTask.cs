@@ -151,6 +151,10 @@ namespace Cryville.Packages {
 			}
 			IsCompletedSuccessfully = true;
 		}
+
+		public void DeleteDownloadedFile() {
+			File.Delete(DownloadFilePath);
+		}
 	}
 	public readonly record struct HttpProgress(ulong TransferredSize, ulong? TotalSize) {
 		public ulong? RemainingSize => TotalSize - TransferredSize;
