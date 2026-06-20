@@ -122,7 +122,11 @@ namespace Cryville.Packages {
 			response.EnsureSuccessStatusCode();
 			using var content = response.Content;
 			ulong? contentLength = (ulong?)content.Headers.ContentLength;
-			using var stream = await content.ReadAsStreamAsync().ConfigureAwait(false);
+			using var stream = await content.ReadAsStreamAsync(
+#if NET5_0_OR_GREATER
+				cancellationToken
+#endif
+			).ConfigureAwait(false);
 
 			using var outStream = new FileStream(DownloadFilePath, FileMode.Create, FileAccess.Write);
 			int bufferLength = 81920;
