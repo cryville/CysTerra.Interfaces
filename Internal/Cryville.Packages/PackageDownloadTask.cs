@@ -74,9 +74,17 @@ namespace Cryville.Packages {
 			}
 			if (versionInfo.Dependencies is not { } dependencies)
 				return;
-			DependencyInfo[] pendingDependencies;
+			var pendingDependencies = new List<DependencyInfo>();
+			var packedDependecies = versionInfo.PackedDependecies ?? new HashSet<string>();
 			lock (result) {
-				pendingDependencies = [.. dependencies.Where(d => ShouldDownload(d.Id, result, new(d.Version)))];
+				foreach (var d in dependencies) {
+					string dependencyId = d.Id;
+					if (!ShouldDownload(dependencyId, result, new(d.Version)))
+						continue;
+					if (packedDependecies.Contains(dependencyId))
+						continue;
+					pendingDependencies.Add(d);
+				}
 			}
 			await Task.WhenAll(pendingDependencies.Select(d => ResolveDependencyUrisAsync(d, result, cancellationToken))).ConfigureAwait(false);
 		}
