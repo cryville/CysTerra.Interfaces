@@ -10,7 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace Cryville.Packages {
-	public class PackageDownloadTask : IDisposable {
+	public class PackageDownloadTask {
 		readonly PackageInfoFetcher _fetcher;
 		readonly ILocalPackageRepository _localRepo;
 		readonly string _package;
@@ -30,15 +30,6 @@ namespace Cryville.Packages {
 			_platform = platform;
 			_versionInfo = versionInfo;
 			_httpClient = httpClient;
-		}
-		public void Dispose() {
-			Dispose(true);
-			GC.SuppressFinalize(this);
-		}
-		protected virtual void Dispose(bool disposing) {
-			if (!disposing)
-				return;
-			_httpClient.Dispose();
 		}
 
 		public async Task StartAsync(CancellationToken cancellationToken) {
