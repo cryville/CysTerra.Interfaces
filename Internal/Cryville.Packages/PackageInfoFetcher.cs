@@ -23,6 +23,7 @@ namespace Cryville.Packages {
 		public PackageInfoFetcher(Uri baseUri, ILocalPackageRepository localRepo) {
 			BaseUri = baseUri;
 			_localRepo = localRepo;
+			_httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(Shared.UserAgent);
 		}
 		public void Dispose() {
 			Dispose(disposing: true);
@@ -38,6 +39,19 @@ namespace Cryville.Packages {
 			AutomaticDecompression = (DecompressionMethods)(-1),
 			CheckCertificateRevocationList = true
 		}, true);
+
+		string? m_userAgent;
+		public string? UserAgent {
+			get => m_userAgent;
+			set {
+				if (m_userAgent == value)
+					return;
+				m_userAgent = value;
+				_httpClient.DefaultRequestHeaders.UserAgent.Clear();
+				_httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(Shared.UserAgent);
+				_httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(value);
+			}
+		}
 
 		PackageInfoCollection? _cachedPackageInfoCollection;
 		public async Task<PackageInfoCollection> FetchPackageInfoCollectionAsync(CancellationToken cancellationToken) {
@@ -98,7 +112,7 @@ namespace Cryville.Packages {
 			ThrowHelper.ThrowIfNull(package);
 			ThrowHelper.ThrowIfNull(platform);
 			ThrowHelper.ThrowIfNull(versionInfo);
-			return new(this, _localRepo, package, platform, versionInfo);
+			return new(this, _localRepo, package, platform, versionInfo, _httpClient);
 		}
 	}
 }

@@ -5,7 +5,6 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,17 +21,15 @@ namespace Cryville.Packages {
 		readonly ObservableCollection<DownloadTask> m_tasks = [];
 		public IReadOnlyCollection<DownloadTask> Tasks => m_tasks;
 
-		readonly HttpClient _httpClient = new(new HttpClientHandler() {
-			AutomaticDecompression = (DecompressionMethods)(-1),
-			CheckCertificateRevocationList = true
-		}, true);
+		readonly HttpClient _httpClient;
 
-		internal PackageDownloadTask(PackageInfoFetcher fetcher, ILocalPackageRepository localRepo, string package, string platform, VersionInfo versionInfo) {
+		internal PackageDownloadTask(PackageInfoFetcher fetcher, ILocalPackageRepository localRepo, string package, string platform, VersionInfo versionInfo, HttpClient httpClient) {
 			_fetcher = fetcher;
 			_localRepo = localRepo;
 			_package = package;
 			_platform = platform;
 			_versionInfo = versionInfo;
+			_httpClient = httpClient;
 		}
 		public void Dispose() {
 			Dispose(true);
