@@ -94,7 +94,11 @@ namespace Cryville.Packages {
 		async Task<T> GetAndDeserializeAsync<T>(Uri uri, CancellationToken cancellationToken) {
 			using var response = await _httpClient.GetAsync(uri, cancellationToken).ConfigureAwait(false);
 			response.EnsureSuccessStatusCode();
-			using var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
+			using var stream = await response.Content.ReadAsStreamAsync(
+#if NET5_0_OR_GREATER
+				cancellationToken
+#endif
+			).ConfigureAwait(false);
 			return await JsonSerializer.DeserializeAsync<T>(stream, _jsonSerializerOptions, cancellationToken).ConfigureAwait(false)
 				?? throw new InvalidOperationException("Server returned null.");
 		}
