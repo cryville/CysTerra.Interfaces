@@ -4,6 +4,11 @@ namespace Cryville.EEW.Report {
 	/// <summary>
 	/// Represents a key for grouping reports.
 	/// </summary>
+	/// <remarks>
+	/// <para>Report groups with any matching group keys are grouped together.</para>
+	/// <para>Group keys are matched with the <see cref="object.Equals(object)" /> method and hashed with the <see cref="object.GetHashCode" /> method.</para>
+	/// <para>It is recommended to use the <see langword="record" /> type to implement this interface because it automatically implements the aforementioned two methods.</para>
+	/// </remarks>
 	[SuppressMessage("CodeQuality", "IDE0079", Justification = "False report")]
 	[SuppressMessage("Design", "CA1040", Justification = "Used for type identification")]
 	public interface IReportGroupKey { }
@@ -11,6 +16,9 @@ namespace Cryville.EEW.Report {
 	/// <summary>
 	/// Represents a sortable report group key.
 	/// </summary>
+	/// <remarks>
+	/// Sortable group keys are matched with the <see cref="Match(ISortableReportGroupKey)" /> method instead, unlike <see cref="IReportGroupKey" />.
+	/// </remarks>
 	public interface ISortableReportGroupKey : IReportGroupKey {
 		/// <summary>
 		/// Compares the group key with another group key and returns an integer that indicates whether the current group key precedes, follows, or occurs in the same position in the sort order as the other group key.
@@ -36,9 +44,6 @@ namespace Cryville.EEW.Report {
 		/// </summary>
 		/// <param name="obj">The other group key.</param>
 		/// <returns>Whether the two group keys match.</returns>
-		/// <remarks>
-		/// <para>Report groups with any matching group keys are grouped together.</para>
-		/// </remarks>
 		bool Match(ISortableReportGroupKey obj);
 	}
 }

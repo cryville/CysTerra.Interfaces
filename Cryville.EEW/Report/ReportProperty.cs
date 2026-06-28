@@ -10,7 +10,10 @@ namespace Cryville.EEW.Report {
 	/// <param name="RawValue">The raw value.</param>
 	/// <param name="Key">The name.</param>
 	/// <param name="Value">The value.</param>
-	/// <param name="Severity">The severity</param>
+	/// <param name="Severity">The severity. See <see cref="ISeverityScheme" /> for the definition.</param>
+	/// <remarks>
+	/// Consider use the <see cref="ReportProperty(TagTypeKey, string?, string, ISeverityScheme, object?)" /> constructor if <paramref name="Type" /> is well-known, so that the <see cref="Severity" /> property is determined by the severity scheme specified by the user.
+	/// </remarks>
 	public sealed record ReportProperty(TagTypeKey Type, object? RawValue, string? Key, string Value, float Severity) : TaggedProperty(new(Type, RawValue), Key, Value, CultureInfo.InvariantCulture) {
 		readonly float? _severityForColorHint;
 
@@ -20,7 +23,10 @@ namespace Cryville.EEW.Report {
 		/// <param name="Type">The type.</param>
 		/// <param name="Key">The name.</param>
 		/// <param name="Value">The value.</param>
-		/// <param name="Severity">The severity</param>
+		/// <param name="Severity">The severity. See <see cref="ISeverityScheme" /> for the definition.</param>
+		/// <remarks>
+		/// Consider use the <see cref="ReportProperty(TagTypeKey, string?, string, ISeverityScheme, object?)" /> constructor if <paramref name="Type" /> is well-known, so that the <see cref="Severity" /> property is determined by the severity scheme specified by the user.
+		/// </remarks>
 		public ReportProperty(TagTypeKey Type, string? Key, string Value, float Severity)
 			: this(Type, null, Key, Value, Severity) { _severityForColorHint = Severity; }
 
@@ -32,6 +38,9 @@ namespace Cryville.EEW.Report {
 		/// <param name="Value">The value.</param>
 		/// <param name="severityScheme">The severity scheme.</param>
 		/// <param name="rawValue">The raw value.</param>
+		/// <remarks>
+		/// In a report generator, <paramref name="severityScheme" /> can be found in <see cref="IReportGeneratorContext.SeverityScheme" />.
+		/// </remarks>
 		public ReportProperty(TagTypeKey Type, string? Key, string Value, ISeverityScheme severityScheme, object? rawValue)
 			: this(Type, rawValue, Key, Value, severityScheme?.From(Type, rawValue) ?? throw new ArgumentNullException(nameof(severityScheme))) { }
 
