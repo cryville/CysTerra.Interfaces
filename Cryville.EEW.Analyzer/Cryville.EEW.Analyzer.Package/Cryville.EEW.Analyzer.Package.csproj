@@ -16,7 +16,7 @@
 
 		<TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);_AddAnalyzersToOutput</TargetsForTfmSpecificContentInPackage>
 
-		<PackageVersion>0.8.0</PackageVersion>
+		<PackageVersion>0.8.6</PackageVersion>
 	</PropertyGroup>
 
 	<PropertyGroup>
