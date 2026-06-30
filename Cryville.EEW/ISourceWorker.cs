@@ -38,8 +38,8 @@ namespace Cryville.EEW {
 		new event Handler<T?>? Received;
 
 		event Handler<object?>? ISourceWorker.Received {
-			add { Received += value; }
-			remove { Received -= value; }
+			add => Received += value;
+			remove => Received -= value;
 		}
 	}
 }

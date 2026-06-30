@@ -22,11 +22,10 @@ namespace Cryville.EEW {
 			Timeout = TimeSpan.FromSeconds(10)
 		};
 
-		readonly Uri m_uri;
 		/// <summary>
 		/// The base URI.
 		/// </summary>
-		protected Uri BaseUri => m_uri;
+		protected Uri BaseUri { get; }
 
 		/// <summary>
 		/// Whether to force the pulling period to be <see cref="DefaultPeriod" />.
@@ -51,7 +50,7 @@ namespace Cryville.EEW {
 		/// </summary>
 		/// <param name="uri">The base URI of the source.</param>
 		protected HttpPullWorker(Uri uri) {
-			m_uri = uri;
+			BaseUri = uri;
 			Client.DefaultRequestHeaders.UserAgent.ParseAdd(SharedSettings.UserAgent);
 			string? ua = WebUtils.ToUserAgent(GetType());
 			if (!string.IsNullOrWhiteSpace(ua)) Client.DefaultRequestHeaders.UserAgent.ParseAdd(ua);
@@ -221,7 +220,7 @@ namespace Cryville.EEW {
 		/// <remarks>
 		/// If not overridden, the request URI is always <see cref="BaseUri" />.
 		/// </remarks>
-		protected virtual Uri GetUri() => m_uri;
+		protected virtual Uri GetUri() => BaseUri;
 		/// <summary>
 		/// Called when a response is handled successfully, or when the server responses with a non-error status code (100~399).
 		/// </summary>
