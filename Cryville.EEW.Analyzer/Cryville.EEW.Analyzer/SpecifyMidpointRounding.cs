@@ -9,13 +9,13 @@ namespace Cryville.EEW.Analyzer {
 	using static Resources;
 
 	[DiagnosticAnalyzer(LanguageNames.CSharp, LanguageNames.VisualBasic)]
-	public class SpecifyIFormatProvider : DiagnosticAnalyzer {
-		static readonly LocalizableString Title = CreateLocalizableResourceString(nameof(SpecifyIFormatProviderTitle));
-		static readonly LocalizableString MessageFormat = CreateLocalizableResourceString(nameof(SpecifyIFormatProviderMessageFormat));
-		static readonly LocalizableString Description = CreateLocalizableResourceString(nameof(SpecifyIFormatProviderDescription));
+	public class SpecifyMidpointRounding : DiagnosticAnalyzer {
+		static readonly LocalizableString Title = CreateLocalizableResourceString(nameof(SpecifyMidpointRoundingTitle));
+		static readonly LocalizableString MessageFormat = CreateLocalizableResourceString(nameof(SpecifyMidpointRoundingMessageFormat));
+		static readonly LocalizableString Description = CreateLocalizableResourceString(nameof(SpecifyMidpointRoundingDescription));
 
-		public const string DiagnosticId = "CRYVEEW0002";
-		const string Category = "Globalization";
+		public const string DiagnosticId = "CRYVEEW1004";
+		const string Category = "Usage";
 		static readonly DiagnosticDescriptor Rule = new(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Warning, true, Description);
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Rule];
 
@@ -36,11 +36,7 @@ namespace Cryville.EEW.Analyzer {
 			readonly PreferredOverloadFinder _finder;
 
 			public InternalAnalyzer(Compilation compilation) {
-				_finder = new(compilation, compilation.GetType("System.IFormatProvider"));
-
-				// Add excluded methods
-				_finder.AddException(compilation.GetType("System.Char").GetMethod("ToString"), null);
-				_finder.AddException(compilation.GetType("System.Text.StringBuilder").GetMethod("AppendLine"), null);
+				_finder = new(compilation, compilation.GetType("System.MidpointRounding"));
 			}
 
 			public void Analyze(OperationAnalysisContext context) {
