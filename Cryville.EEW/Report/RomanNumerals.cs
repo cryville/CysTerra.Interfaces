@@ -21,7 +21,7 @@ namespace Cryville.EEW.Report {
 		/// <param name="severityScheme">The severity scheme.</param>
 		/// <param name="accuracyOrder">The accuracy of the value (<see cref="ReportProperty.AccuracyOrder" />).</param>
 		/// <returns>An instance of the <see cref="ReportProperty" /> class.</returns>
-		public static ReportProperty CreateRomanIntensityProperty(TagTypeKey type, string? key, float value, CultureInfo culture, ISeverityScheme severityScheme, int accuracyOrder) => new(type, key, ToRomanNumeralChar(Math.Clamp((int)MathF.Round(value), 1, 12), culture), severityScheme, value) { AccuracyOrder = accuracyOrder, Condition = string.Format(culture, "({0})", value.ToString("F1", culture)) };
+		public static ReportProperty CreateRomanIntensityProperty(TagTypeKey type, string? key, float value, CultureInfo culture, ISeverityScheme severityScheme, int accuracyOrder) => new(type, key, ToRomanNumeralChar(Math.Clamp((int)MathF.Round(value, MidpointRounding.AwayFromZero), 1, 12), culture), severityScheme, value) { AccuracyOrder = accuracyOrder, Condition = string.Format(culture, "({0})", value.ToString("F1", culture)) };
 
 		/// <summary>
 		/// Converts an integer to the corresponding Roman numeral character.
