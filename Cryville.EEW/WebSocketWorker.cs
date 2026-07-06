@@ -1,4 +1,5 @@
 using System;
+using System.Buffers;
 using System.IO;
 using System.Net.WebSockets;
 using System.Threading;
@@ -9,6 +10,8 @@ namespace Cryville.EEW {
 	/// A source worker that pulls events with WebSocket.
 	/// </summary>
 	public abstract class WebSocketWorker(Uri uri) : IDisposable {
+		ClientWebSocket? _socket = null;
+
 		/// <inheritdoc />
 		protected virtual void Dispose(bool disposing) { }
 		/// <inheritdoc />
@@ -27,6 +30,7 @@ namespace Cryville.EEW {
 				int reconnectTimeout = 1000;
 				for (; ; ) {
 					using var socket = new ClientWebSocket();
+					_socket = socket;
 					string? ua = WebUtils.ToUserAgent(GetType());
 					socket.Options.SetRequestHeader("User-Agent", string.IsNullOrWhiteSpace(ua) ? SharedSettings.UserAgent : $"{SharedSettings.UserAgent} {ua}");
 					using var ctsTimeout = new CancellationTokenSource(10000);
@@ -115,6 +119,52 @@ namespace Cryville.EEW {
 		/// <returns>The task.</returns>
 		[Obsolete("Override Handle(Stream, WebSocketMessageType, CancellationToken) instead.")]
 		protected virtual Task Handle(Stream stream, CancellationToken cancellationToken) => Task.CompletedTask;
+
+		readonly SemaphoreSlim _sendSemaphore = new(1, 1);
+		/// <summary>
+		/// Sends a message.
+		/// </summary>
+		/// <param name="content">The message content.</param>
+		/// <param name="messageType">The message type.</param>
+		/// <param name="cancellationToken">A cancellation token.</param>
+		/// <returns>The task.</returns>
+		/// <exception cref="InvalidOperationException">The socket is not connected.</exception>
+		protected async Task SendAsync(ReadOnlyMemory<byte> content, WebSocketMessageType messageType, CancellationToken cancellationToken) {
+			if (_socket == null)
+				throw new InvalidOperationException("Trying to send data while the socket is not connected.");
+			await _sendSemaphore.WaitAsync(cancellationToken).ConfigureAwait(true);
+			try {
+				await _socket.SendAsync(content, messageType, true, cancellationToken).ConfigureAwait(true);
+			}
+			finally {
+				_sendSemaphore.Release();
+			}
+		}
+		/// <summary>
+		/// Sends a message.
+		/// </summary>
+		/// <param name="stream">The stream that contains the content of the message.</param>
+		/// <param name="messageType">The message type.</param>
+		/// <param name="cancellationToken">A cancellation token.</param>
+		/// <returns>The task.</returns>
+		/// <exception cref="InvalidOperationException">The socket is not connected.</exception>
+		protected async Task SendAsync(Stream stream, WebSocketMessageType messageType, CancellationToken cancellationToken) {
+			if (_socket == null)
+				throw new InvalidOperationException("Trying to send data while the socket is not connected.");
+			await _sendSemaphore.WaitAsync(cancellationToken).ConfigureAwait(true);
+			try {
+				byte[] buffer = ArrayPool<byte>.Shared.Rent(1024);
+				while (true) {
+					int readCount = await stream.ReadAsync(buffer, cancellationToken).ConfigureAwait(true);
+					if (readCount == 0)
+						break;
+					await _socket.SendAsync(buffer.AsMemory()[..readCount], messageType, true, cancellationToken).ConfigureAwait(true);
+				}
+			}
+			finally {
+				_sendSemaphore.Release();
+			}
+		}
 
 		/// <summary>
 		/// Called when a response is received.
