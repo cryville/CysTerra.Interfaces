@@ -36,6 +36,7 @@ namespace Cryville.EEW {
 						await socket.ConnectAsync(uri, ctsLinked.Token).ConfigureAwait(true);
 						reconnectTimeout = 1000;
 						OnHeartbeat();
+						await OnConnected(cancellationToken).ConfigureAwait(true);
 						using var stream = new MemoryStream();
 						Memory<byte> memory = new(new byte[1024]);
 						for (; ; ) {
@@ -92,6 +93,12 @@ namespace Cryville.EEW {
 			}
 		}
 
+		/// <summary>
+		/// Called when the WebSocket is connected.
+		/// </summary>
+		/// <param name="cancellationToken">A cancellation token.</param>
+		/// <returns>The task.</returns>
+		protected virtual Task OnConnected(CancellationToken cancellationToken) => Task.CompletedTask;
 		/// <summary>
 		/// Handles a response.
 		/// </summary>
