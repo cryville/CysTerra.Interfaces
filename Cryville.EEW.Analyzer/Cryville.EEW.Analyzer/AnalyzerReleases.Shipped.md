@@ -1,4 +1,9 @@
-## Release 0.8.6
+## Release 0.8.7
+### New Rules
+Rule ID     | Category | Severity | Notes
+------------|----------|----------|--------------------
+CRYVEEW3001 | Performance | Warning | AvoidSingleUseOfTagTypeKey
+
 ### New Rules
 Rule ID     | Category | Severity | Notes
 ------------|----------|----------|--------------------
