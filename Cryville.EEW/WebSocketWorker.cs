@@ -47,7 +47,10 @@ namespace Cryville.EEW {
 							}
 							if (result.EndOfMessage) {
 								stream.Seek(0, SeekOrigin.Begin);
+#pragma warning disable CS0618
 								await Handle(stream, cancellationToken).ConfigureAwait(true);
+#pragma warning restore CS0618
+								await Handle(stream, result.MessageType, cancellationToken).ConfigureAwait(true);
 								stream.SetLength(0);
 							}
 						}
@@ -93,9 +96,19 @@ namespace Cryville.EEW {
 		/// Handles a response.
 		/// </summary>
 		/// <param name="stream">The stream that contains the content of the response.</param>
+		/// <param name="messageType">The message type.</param>
 		/// <param name="cancellationToken">A cancellation token.</param>
 		/// <returns>The task.</returns>
-		protected abstract Task Handle(Stream stream, CancellationToken cancellationToken);
+		protected virtual Task Handle(Stream stream, WebSocketMessageType messageType, CancellationToken cancellationToken) => Task.CompletedTask;
+		/// <summary>
+		/// Handles a response.
+		/// </summary>
+		/// <param name="stream">The stream that contains the content of the response.</param>
+		/// <param name="cancellationToken">A cancellation token.</param>
+		/// <returns>The task.</returns>
+		[Obsolete("Override Handle(Stream, WebSocketMessageType, CancellationToken) instead.")]
+		protected virtual Task Handle(Stream stream, CancellationToken cancellationToken) => Task.CompletedTask;
+
 		/// <summary>
 		/// Called when a response is received.
 		/// </summary>
