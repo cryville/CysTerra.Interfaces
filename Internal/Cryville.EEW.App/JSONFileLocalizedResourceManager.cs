@@ -11,7 +11,7 @@ using System.Text.Json.Serialization;
 namespace Cryville.EEW.Core {
 	public abstract partial class JSONFileLocalizedResourceManager : ILocalizedResourceManager {
 		readonly ConcurrentDictionary<(string, string, CultureInfo), MessageRootStringSet> _loadedMessagesByInput = [];
-		readonly ConcurrentDictionary<(string, string), MessageRootStringSet> _loadedMessagesByPath = [];
+		readonly ConcurrentDictionary<(string, string), MessageRootStringSet?> _loadedMessagesByPath = [];
 
 		public virtual IMessageStringSet GetRootStringSet(string assembly, string type, [NotNull] ref CultureInfo? culture)
 			=> GetRootStringSetInternal(assembly, type, ref culture);
@@ -20,36 +20,41 @@ namespace Cryville.EEW.Core {
 
 			culture ??= CultureInfo.InvariantCulture;
 			var key = (assembly, type, culture);
-			if (_loadedMessagesByInput.TryGetValue(key, out var set)) {
-				culture = SharedCultures.Get(set.Culture);
-				return set;
+			if (!_loadedMessagesByInput.TryGetValue(key, out var set)) {
+				set = OpenRootStringSetWithCultureFallback(assembly, type, ref culture);
+				_loadedMessagesByInput.TryAdd(key, set);
 			}
-
+			culture = SharedCultures.Get(set.Culture);
+			return set;
+		}
+		protected virtual MessageRootStringSet OpenRootStringSetWithCultureFallback(string assembly, string type, ref CultureInfo culture) {
 			for (; ; ) {
 				bool isUltimateFallback = culture.Equals(CultureInfo.InvariantCulture);
-				string path = Path.Combine(type, $"{(isUltimateFallback ? "und" : culture.Name)}.json");
-				var pathKey = (assembly, path);
-				if (!_loadedMessagesByPath.TryGetValue(pathKey, out set)) {
-					using var stream = Open(assembly, path);
-					if (stream == null) {
-						if (isUltimateFallback)
-							throw new InvalidOperationException("Resource not found.");
-						culture = culture.Parent;
-						continue;
-					}
-					set = JsonSerializer.Deserialize(stream, SerializerContext.Default.MessageRootStringSet);
-					if (set == null) throw new InvalidOperationException("Invalid resource.");
-					if (set.Parent is string parent) {
-						var parentCulture = SharedCultures.Get(parent);
-						set._parentSet = GetRootStringSetInternal(assembly, type, ref parentCulture);
-					}
-					_loadedMessagesByPath.TryAdd(pathKey, set);
+				var set = GetOrOpenRootStringSetWithCultureExact(assembly, type, culture.Name, isUltimateFallback);
+				if (set == null) {
+					if (isUltimateFallback)
+						throw new InvalidOperationException("Resource not found.");
+					culture = culture.Parent;
+					continue;
 				}
-				_loadedMessagesByInput.TryAdd(key, set);
-				culture = SharedCultures.Get(set.Culture);
 				return set;
 			}
 		}
+		protected MessageRootStringSet? GetOrOpenRootStringSetWithCultureExact(string assembly, string type, string cultureName, bool isUltimateFallback) {
+			string path = Path.Combine(type, $"{(isUltimateFallback ? "und" : cultureName)}.json");
+			var pathKey = (assembly, path);
+			if (!_loadedMessagesByPath.TryGetValue(pathKey, out var set)) {
+				using var stream = Open(assembly, path);
+				set = stream == null ? null : JsonSerializer.Deserialize(stream, SerializerContext.Default.MessageRootStringSet);
+				if (set?.Parent is string parent) {
+					var parentCulture = SharedCultures.Get(parent);
+					set._parentSet = GetRootStringSet(assembly, type, ref parentCulture);
+				}
+				_loadedMessagesByPath.TryAdd(pathKey, set);
+			}
+			return set;
+		}
+
 		protected virtual Stream? Open(string ns, string path) => Open(Path.Combine(ns, path));
 		protected abstract Stream? Open(string path);
 
@@ -62,7 +67,7 @@ namespace Cryville.EEW.Core {
 			return set;
 		}
 
-		record MessageStringSet(
+		protected record MessageStringSet(
 			IReadOnlyDictionary<string, string> Strings,
 			IReadOnlyDictionary<string, MessageStringSet> StringSets
 		) : IMessageStringSet {
@@ -78,7 +83,7 @@ namespace Cryville.EEW.Core {
 			}
 		}
 
-		sealed record MessageRootStringSet(
+		protected sealed record MessageRootStringSet(
 			string Culture,
 			string? Parent,
 			IReadOnlyDictionary<string, string> Strings,
