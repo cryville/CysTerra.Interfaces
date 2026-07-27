@@ -1,5 +1,5 @@
 using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 
@@ -8,7 +8,8 @@ namespace Cryville.EEW {
 	/// Shared cultures.
 	/// </summary>
 	public static class SharedCultures {
-		static readonly Dictionary<string, WrappedCultureInfo> _map = [];
+		static readonly ConcurrentDictionary<string, WrappedCultureInfo> _nameMap = [];
+		static readonly ConcurrentDictionary<int, WrappedCultureInfo> _lcidMap = [];
 
 		[ThreadStatic]
 		static CultureInfo? m_currentCulture;
@@ -45,15 +46,37 @@ namespace Cryville.EEW {
 			return InternalGet(name);
 		}
 		static WrappedCultureInfo InternalGet(string name) {
-			lock (_map) {
-				if (!_map.TryGetValue(name, out var result)) {
-					_map.Add(name, result = new(name));
-				}
-				return result;
+			if (!_nameMap.TryGetValue(name, out var result)) {
+				result = new(name);
+				CacheCulture(result);
 			}
+			return result;
 		}
+
+		/// <summary>
+		/// Gets a culture of the specified LCID.
+		/// </summary>
+		/// <param name="lcid">The LCID of the culture.</param>
+		/// <returns>The culture of the specified LCID.</returns>
+		public static CultureInfo Get(int lcid) {
+			return InternalGet(lcid);
+		}
+		static WrappedCultureInfo InternalGet(int lcid) {
+			if (!_lcidMap.TryGetValue(lcid, out var result)) {
+				result = new(lcid);
+				CacheCulture(result);
+			}
+			return result;
+		}
+
+		static void CacheCulture(WrappedCultureInfo result) {
+			_nameMap.TryAdd(result.Name, result);
+			_lcidMap.TryAdd(result.LCID, result);
+		}
+
 		sealed class WrappedCultureInfo : CultureInfo {
 			public WrappedCultureInfo(string name) : base(name) { }
+			public WrappedCultureInfo(int lcid) : base(lcid) { }
 
 			DateTimeFormatInfo? m_dateTimeFormatInfo;
 			public override DateTimeFormatInfo DateTimeFormat {
