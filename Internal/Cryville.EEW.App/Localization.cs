@@ -23,6 +23,9 @@ namespace Cryville.EEW.Core {
 			public readonly ILocalizableMessageStringSet GetLocalizableRootStringSet(string assembly, string type) => parent.GetLocalizableRootStringSet(assemblyName, type);
 		}
 
+		public static int GetCultureDistance(CultureInfo desired, CultureInfo supported)
+			=> LocalizedResources.Manager is ILocalizedResourceManager2 manager2 ? manager2.GetCultureDistance(desired, supported) : -1;
+
 		public static CultureInfo CurrentCulture {
 			get => SharedCultures.CurrentCulture;
 			set => SharedCultures.CurrentCulture = value;
