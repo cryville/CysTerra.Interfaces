@@ -25,4 +25,15 @@ namespace Cryville.EEW {
 		/// <returns>The localizable root string set of the specified namespace.</returns>
 		ILocalizableMessageStringSet GetLocalizableRootStringSet(string assembly, string type);
 	}
+	/// <inheritdoc cref="ILocalizedResourceManager" />
+	[EditorBrowsable(EditorBrowsableState.Never)]
+	public interface ILocalizedResourceManager2 : ILocalizedResourceManager {
+		/// <summary>
+		/// Gets the distance from a culture to another.
+		/// </summary>
+		/// <param name="desiredCulture">The desired culture.</param>
+		/// <param name="supportedCulture">The supported culture.</param>
+		/// <returns>The distance from the desired culture to the supported culture, <see cref="int.MaxValue" /> if practically unreachable.</returns>
+		int GetCultureDistance(CultureInfo desiredCulture, CultureInfo supportedCulture);
+	}
 }
