@@ -19,9 +19,9 @@ namespace Cryville.EEW {
 		/// <inheritdoc />
 		public HttpResponseStatusException() { }
 		/// <inheritdoc />
-		public HttpResponseStatusException(string message) : base(message) { }
+		public HttpResponseStatusException(string? message) : base(message) { }
 		/// <inheritdoc />
-		public HttpResponseStatusException(string message, Exception innerException) : base(message, innerException) { }
+		public HttpResponseStatusException(string? message, Exception? innerException) : base(message, innerException) { }
 #if NET5_0_OR_GREATER
 		/// <inheritdoc />
 		public HttpResponseStatusException(string? message, Exception? inner, HttpStatusCode statusCode) : base(message, inner, statusCode) { }

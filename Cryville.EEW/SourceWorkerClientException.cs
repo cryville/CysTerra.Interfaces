@@ -8,8 +8,8 @@ namespace Cryville.EEW {
 		/// <inheritdoc />
 		public SourceWorkerClientException() { }
 		/// <inheritdoc />
-		public SourceWorkerClientException(string message) : base(message) { }
+		public SourceWorkerClientException(string? message) : base(message) { }
 		/// <inheritdoc />
-		public SourceWorkerClientException(string message, Exception innerException) : base(message, innerException) { }
+		public SourceWorkerClientException(string? message, Exception? innerException) : base(message, innerException) { }
 	}
 }

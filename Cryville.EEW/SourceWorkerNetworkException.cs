@@ -11,8 +11,8 @@ namespace Cryville.EEW {
 		/// <inheritdoc />
 		public SourceWorkerNetworkException() { }
 		/// <inheritdoc />
-		public SourceWorkerNetworkException(string message) : base(message) { }
+		public SourceWorkerNetworkException(string? message) : base(message) { }
 		/// <inheritdoc />
-		public SourceWorkerNetworkException(string message, Exception innerException) : base(message, innerException) { }
+		public SourceWorkerNetworkException(string? message, Exception? innerException) : base(message, innerException) { }
 	}
 }
