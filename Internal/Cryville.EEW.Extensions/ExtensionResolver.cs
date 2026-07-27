@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 namespace Cryville.EEW.Extensions {
 	public class ExtensionResolver {
 		public LocalizedResource? ResolverMessageResource { get; set; }
+		public Func<string, IScopedLocalizedResourceManager> TemporaryLocalizedResourceManagerFactory { get; set; } = path => new TemporaryLocalizedResourceManager(path);
 		string GetResolverMessage(string key) => ResolverMessageResource?.RootMessageStringSet.GetString(key) ?? key;
 
 		List<string>? _cachedAssemblyPaths;
@@ -91,7 +92,7 @@ namespace Cryville.EEW.Extensions {
 			if (name != expectedAssemblyName)
 				throw new InvalidOperationException(GetResolverMessage("ExtensionErrorNameMismatch"));
 			var version = assemblyName.Version;
-			using var resScope = Localization.EnterScope(new TemporaryLocalizedResourceManager(dirInfo.FullName));
+			using var resScope = Localization.EnterScope(TemporaryLocalizedResourceManagerFactory(dirInfo.FullName));
 			var attrData = assembly.GetCustomAttributesData();
 			string displayName = GetAttrbute<DisplayNameAttribute>(attrData, context)?.DisplayName ?? GetAttrbute<AssemblyTitleAttribute>(attrData, context)?.Title ?? name;
 			var displayNameCulture = resScope.ReadLastReturnedCulture();
