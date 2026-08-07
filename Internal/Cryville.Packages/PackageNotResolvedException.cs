@@ -22,5 +22,6 @@ namespace Cryville.Packages {
 	public enum PackageNotResolvedReason {
 		ResourceNotFound,
 		VersionInfoNotFound,
+		InternalPackageVersionTooLow,
 	}
 }

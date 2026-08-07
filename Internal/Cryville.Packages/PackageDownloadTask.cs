@@ -76,9 +76,30 @@ namespace Cryville.Packages {
 			}
 			await Task.WhenAll(pendingDependencies.Select(d => ResolveDependencyUrisAsync(d, result, cancellationToken))).ConfigureAwait(false);
 		}
-		bool ShouldDownload(string package, Dictionary<string, DownloadTask> result, Version requiredVersion) =>
-			(!_localRepo.TryGetLocalPackageVersion(package, out var installedVersion) || (installedVersion != null ? new Version(installedVersion) : null) < requiredVersion) &&
-			(!result.TryGetValue(package, out var existingTask) || existingTask.Version < requiredVersion);
+		bool ShouldDownload(string package, Dictionary<string, DownloadTask> result, Version requiredVersion) {
+			if (_localRepo is ILocalPackageRepository2 localRepo2) {
+				if (localRepo2.TryGetLocalPackageInfo(package, out var installedVersionInfo)) {
+					if ((installedVersionInfo.Version is { } installedVersion ? new Version(installedVersion) : null) >= requiredVersion) {
+						return false;
+					}
+					else if (installedVersionInfo.IsInternalPackage) {
+						throw new PackageNotResolvedException(package, requiredVersion.ToString(), PackageNotResolvedReason.InternalPackageVersionTooLow);
+					}
+				}
+			}
+			else {
+				if (_localRepo.TryGetLocalPackageVersion(package, out var installedVersion)) {
+					if ((installedVersion != null ? new Version(installedVersion) : null) >= requiredVersion) {
+						return false;
+					}
+				}
+			}
+			if (!result.TryGetValue(package, out var existingTask))
+				return true;
+			if (existingTask.Version < requiredVersion)
+				return true;
+			return false;
+		}
 		async Task ResolveDependencyUrisAsync(DependencyInfo dependencyInfo, Dictionary<string, DownloadTask> result, CancellationToken cancellationToken) {
 			string package = dependencyInfo.Id;
 			string version = dependencyInfo.Version;
