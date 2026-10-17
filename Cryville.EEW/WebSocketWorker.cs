@@ -15,6 +15,19 @@ namespace Cryville.EEW {
 		[SuppressMessage("Usage", "CA2213", Justification = "Not owned: disposed in the RunAsync task")]
 		ClientWebSocket? _socket;
 
+		/// <summary>
+		/// The initial URI.
+		/// </summary>
+		protected Uri InitialUri => uri;
+		/// <summary>
+		/// Gets the URI of the next connection.
+		/// </summary>
+		/// <returns>The URI of the next connection.</returns>
+		/// <remarks>
+		/// If not overridden, the request URI is always the initial URI provided in the constructor.
+		/// </remarks>
+		protected virtual Uri GetUri() => InitialUri;
+
 		/// <inheritdoc />
 		protected virtual void Dispose(bool disposing) { }
 		/// <inheritdoc />
@@ -40,7 +53,7 @@ namespace Cryville.EEW {
 					var ctTimeout = ctsTimeout.Token;
 					try {
 						using var ctsLinked = CancellationTokenSource.CreateLinkedTokenSource(ctTimeout, cancellationToken);
-						await socket.ConnectAsync(uri, ctsLinked.Token).ConfigureAwait(true);
+						await socket.ConnectAsync(GetUri(), ctsLinked.Token).ConfigureAwait(true);
 						reconnectTimeout = 1000;
 						OnHeartbeat();
 						await OnConnected(cancellationToken).ConfigureAwait(true);
