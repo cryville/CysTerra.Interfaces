@@ -11,6 +11,7 @@ namespace Cryville.EEW {
 	/// <summary>
 	/// A source worker that pulls events with WebSocket.
 	/// </summary>
+	/// <param name="uri">The initial URI to connect to.</param>
 	public abstract class WebSocketWorker(Uri uri) : IDisposable {
 		[SuppressMessage("CodeQuality", "IDE0079", Justification = "False report")]
 		[SuppressMessage("Usage", "CA2213", Justification = "Not owned: disposed in the RunAsync task")]
@@ -150,6 +151,7 @@ namespace Cryville.EEW {
 		/// <param name="cancellationToken">A cancellation token.</param>
 		/// <returns>The task.</returns>
 		/// <exception cref="InvalidOperationException">The socket is not connected.</exception>
+		/// <exception cref="ObjectDisposedException">The socket is has been closed.</exception>
 		protected async Task SendAsync(ReadOnlyMemory<byte> content, WebSocketMessageType messageType, CancellationToken cancellationToken) {
 			if (_socket == null)
 				throw new InvalidOperationException("Trying to send data while the socket is not connected.");
@@ -169,6 +171,7 @@ namespace Cryville.EEW {
 		/// <param name="cancellationToken">A cancellation token.</param>
 		/// <returns>The task.</returns>
 		/// <exception cref="InvalidOperationException">The socket is not connected.</exception>
+		/// <exception cref="ObjectDisposedException">The socket is has been closed.</exception>
 		/// <remarks>
 		/// The length of the stream must not change during sending.
 		/// </remarks>
