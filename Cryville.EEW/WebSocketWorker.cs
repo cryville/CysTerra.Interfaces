@@ -1,3 +1,4 @@
+using Cryville.Common.Compat;
 using System;
 using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
@@ -164,17 +165,48 @@ namespace Cryville.EEW {
 		/// <param name="cancellationToken">A cancellation token.</param>
 		/// <returns>The task.</returns>
 		/// <exception cref="InvalidOperationException">The socket is not connected.</exception>
+		/// <remarks>
+		/// The length of the stream must not change during sending.
+		/// </remarks>
 		protected async Task SendAsync(Stream stream, WebSocketMessageType messageType, CancellationToken cancellationToken) {
+			ThrowHelper.ThrowIfNull(stream);
 			if (_socket == null)
 				throw new InvalidOperationException("Trying to send data while the socket is not connected.");
+
+			long length = -1;
+			try {
+				length = stream.Length - stream.Position;
+			}
+			catch (NotSupportedException) { }
+
 			await _sendSemaphore.WaitAsync(cancellationToken).ConfigureAwait(true);
 			try {
 				byte[] buffer = ArrayPool<byte>.Shared.Rent(1024);
-				while (true) {
-					int readCount = await stream.ReadAsync(buffer, cancellationToken).ConfigureAwait(true);
-					if (readCount == 0)
-						break;
-					await _socket.SendAsync(buffer.AsMemory()[..readCount], messageType, true, cancellationToken).ConfigureAwait(true);
+				if (length < 0) {
+					while (true) {
+						int readCount = await stream.ReadAsync(buffer, cancellationToken).ConfigureAwait(true);
+						if (readCount == 0) {
+							await _socket.SendAsync([], messageType, true, cancellationToken).ConfigureAwait(true);
+							break;
+						}
+						await _socket.SendAsync(buffer.AsMemory()[..readCount], messageType, false, cancellationToken).ConfigureAwait(true);
+					}
+				}
+				else {
+					int sentLength = 0;
+					while (true) {
+						int readCount = await stream.ReadAsync(buffer, cancellationToken).ConfigureAwait(true);
+						if (readCount == 0) {
+							await _socket.SendAsync([], messageType, true, cancellationToken).ConfigureAwait(true);
+							break;
+						}
+						sentLength += readCount;
+						bool endOfMessage = sentLength >= length;
+						await _socket.SendAsync(buffer.AsMemory()[..readCount], messageType, endOfMessage, cancellationToken).ConfigureAwait(true);
+						if (endOfMessage) {
+							break;
+						}
+					}
 				}
 			}
 			finally {
