@@ -30,7 +30,11 @@ namespace Cryville.EEW {
 		protected virtual Uri GetUri() => InitialUri;
 
 		/// <inheritdoc />
-		protected virtual void Dispose(bool disposing) { }
+		protected virtual void Dispose(bool disposing) {
+			if (!disposing)
+				return;
+			_sendSemaphore.Dispose();
+		}
 		/// <inheritdoc />
 		public void Dispose() {
 			Dispose(true);
