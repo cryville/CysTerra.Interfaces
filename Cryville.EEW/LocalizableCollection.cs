@@ -20,7 +20,11 @@ namespace Cryville.EEW {
 			foreach (var item in this) {
 				var itemCulture = culture;
 				var value = item.GetLocalizedValue(ref itemCulture);
+#pragma warning disable IDE0079
+#pragma warning disable CA1062
 				if (culture.Name == itemCulture.Name) {
+#pragma warning restore CA1062
+#pragma warning restore IDE0079
 					culture = itemCulture;
 					return value;
 				}

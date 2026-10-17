@@ -1,5 +1,6 @@
 using System;
 using System.Buffers;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Net.WebSockets;
 using System.Threading;
@@ -10,7 +11,9 @@ namespace Cryville.EEW {
 	/// A source worker that pulls events with WebSocket.
 	/// </summary>
 	public abstract class WebSocketWorker(Uri uri) : IDisposable {
-		ClientWebSocket? _socket = null;
+		[SuppressMessage("CodeQuality", "IDE0079", Justification = "False report")]
+		[SuppressMessage("Usage", "CA2213", Justification = "Not owned: disposed in the RunAsync task")]
+		ClientWebSocket? _socket;
 
 		/// <inheritdoc />
 		protected virtual void Dispose(bool disposing) { }
