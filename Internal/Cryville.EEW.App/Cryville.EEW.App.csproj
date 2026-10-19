@@ -11,7 +11,7 @@
 
 	<ItemGroup>
 		<!-- Restore runtimes of package references in Cryville.EEW -->
-		<PackageReference Include="Cryville.Common.Compat" Version="1.1.1" />
+		<PackageReference Include="Cryville.Common.Compat" Version="1.2.0" />
 		<PackageReference Include="System.ComponentModel.Composition" Version="8.0.0" />
 		<PackageReference Include="System.Text.Json" Version="10.0.1" />
 	</ItemGroup>
