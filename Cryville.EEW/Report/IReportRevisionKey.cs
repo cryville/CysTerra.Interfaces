@@ -33,7 +33,6 @@ namespace Cryville.EEW.Report {
 		/// <returns>Whether the revision key is comparable with the specified revision key.</returns>
 		bool IsComparableWith(IReportRevisionKey other) => GetType() == other?.GetType();
 
-		[SuppressMessage("CodeQuality", "IDE0079", Justification = "False report")]
 		[SuppressMessage("Design", "CA1033", Justification = "Forward to IComparable")]
 		int IComparable<IReportRevisionKey>.CompareTo(IReportRevisionKey? other) {
 			if (IsCancellation) return other?.IsCancellation ?? false ? 0 : 1;

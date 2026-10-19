@@ -13,7 +13,6 @@ namespace Cryville.EEW {
 	/// </summary>
 	/// <param name="uri">The initial URI to connect to.</param>
 	public abstract class WebSocketWorker(Uri uri) : IDisposable {
-		[SuppressMessage("CodeQuality", "IDE0079", Justification = "False report")]
 		[SuppressMessage("Usage", "CA2213", Justification = "Not owned: disposed in the RunAsync task")]
 		ClientWebSocket? _socket;
 

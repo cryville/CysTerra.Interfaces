@@ -9,7 +9,6 @@ namespace Cryville.EEW.Report {
 	/// <para>Group keys are matched with the <see cref="object.Equals(object)" /> method and hashed with the <see cref="object.GetHashCode" /> method.</para>
 	/// <para>It is recommended to use the <see langword="record" /> type to implement this interface because it automatically implements the aforementioned two methods.</para>
 	/// </remarks>
-	[SuppressMessage("CodeQuality", "IDE0079", Justification = "False report")]
 	[SuppressMessage("Design", "CA1040", Justification = "Used for type identification")]
 	public interface IReportGroupKey { }
 

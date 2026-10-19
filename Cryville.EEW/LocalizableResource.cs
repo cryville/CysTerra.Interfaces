@@ -7,7 +7,6 @@ namespace Cryville.EEW {
 	/// <summary>
 	/// Represents access to a localizable resource set.
 	/// </summary>
-	[SuppressMessage("CodeQuality", "IDE0079", Justification = "False report")]
 	[SuppressMessage("Performance", "CA1815", Justification = "Not equatable")]
 	public readonly struct LocalizableResource : IDisposable {
 		/// <summary>

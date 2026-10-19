@@ -16,7 +16,6 @@ namespace Cryville.EEW {
 		/// <summary>
 		/// The current culture.
 		/// </summary>
-		[SuppressMessage("CodeQuality", "IDE0079", Justification = "False report")]
 		[SuppressMessage("Globalization", "CRYVEEW0001")]
 		public static CultureInfo CurrentCulture {
 			get => m_currentCulture ??= Get(CultureInfo.CurrentCulture.Name);
@@ -28,7 +27,6 @@ namespace Cryville.EEW {
 		/// <summary>
 		/// The current UI culture.
 		/// </summary>
-		[SuppressMessage("CodeQuality", "IDE0079", Justification = "False report")]
 		[SuppressMessage("Globalization", "CRYVEEW0001")]
 		public static CultureInfo CurrentUICulture {
 			get => m_currentUICulture ??= Get(CultureInfo.CurrentUICulture.Name);

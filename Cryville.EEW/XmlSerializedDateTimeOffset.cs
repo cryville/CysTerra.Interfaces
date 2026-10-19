@@ -56,12 +56,10 @@ namespace Cryville.EEW {
 		public static bool operator >=(XmlSerializedDateTimeOffset left, XmlSerializedDateTimeOffset right) => left.CompareTo(right) >= 0;
 
 		/// <inheritdoc />
-		[SuppressMessage("CodeQuality", "IDE0079", Justification = "False report")]
 		[SuppressMessage("Globalization", "CA1305", Justification = "Bypass")]
 		[SuppressMessage("Globalization", "CRYVEEW0002", Justification = "Bypass")]
 		public override readonly string ToString() => Value.ToString();
 		/// <inheritdoc />
-		[SuppressMessage("CodeQuality", "IDE0079", Justification = "False report")]
 		[SuppressMessage("Globalization", "CA1305", Justification = "Bypass")]
 		[SuppressMessage("Globalization", "CRYVEEW0002", Justification = "Bypass")]
 		public readonly string ToString(string? format) => Value.ToString(format);
