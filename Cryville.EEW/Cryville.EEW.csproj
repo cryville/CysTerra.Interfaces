@@ -6,7 +6,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Cryville.Common.Compat" Version="1.1.1" PrivateAssets="contentfiles;analyzers;build;runtime" />
+		<PackageReference Include="Cryville.Common.Compat" Version="1.2.0" PrivateAssets="contentfiles;analyzers;build;runtime" />
 		<PackageReference Include="System.ComponentModel.Composition" Version="8.0.0" PrivateAssets="contentfiles;analyzers;build;runtime" />
 		<PackageReference Include="System.Text.Json" Version="10.0.1" PrivateAssets="contentfiles;analyzers;build;runtime" />
 	</ItemGroup>
