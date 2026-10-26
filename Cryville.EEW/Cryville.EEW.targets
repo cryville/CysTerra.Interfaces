@@ -22,6 +22,19 @@
 			</Content>
 		</ItemGroup>
 	</Target>
+
+	<Target Name="_ProcessExtensionReferences" BeforeTargets="CollectPackageReferences" Condition="'$(IsExtensionProject)' == 'true'">
+		<ItemGroup>
+			<PackageReference PrivateAssets="contentfiles;analyzers;build;runtime" />
+			<PackageReference Update="@(CysTerraInterfacePackage)" ExcludeAssets="runtime" />
+			<PackageReference Condition="'%(PackageReference.IsExtension)' == 'true'" ExcludeAssets="runtime" />
+		</ItemGroup>
+		<ItemGroup>
+			<ProjectReference Update="@(CysTerraInterfacePackage)" Private="false" IncludeRuntimeDependency="true" />
+			<ProjectReference Condition="'%(ProjectReference.IsExtension)' == ''" IsExtension="true" />
+			<ProjectReference Condition="'%(ProjectReference.IsExtension)' == 'true'" Private="false" IncludeRuntimeDependency="true" />
+		</ItemGroup>
+	</Target>
 	
 	<Target Name="_MakeTransitiveProjectRefsNonPrivate" AfterTargets="IncludeTransitiveProjectReferences" Condition="'$(GenerateExtensionPackage)' == 'true'">
 		<ItemGroup>

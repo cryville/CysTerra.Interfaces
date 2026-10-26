@@ -6,4 +6,14 @@
 		<!-- Disable library trimming in .deps.json introduced in .NET 10 -->
 		<TrimDepsJsonLibrariesWithoutAssets>false</TrimDepsJsonLibrariesWithoutAssets>
 	</PropertyGroup>
+
+	<ItemGroup>
+		<CysTerraInterfacePackage Include="Cryville.EEW" />
+		<CysTerraInterfacePackage Include="Cryville.EEW.Analyzer" />
+		<CysTerraInterfacePackage Include="Cryville.EEW.Features" />
+		<CysTerraInterfacePackage Include="Cryville.EEW.Measure" />
+		<CysTerraInterfacePackage Include="Cryville.EEW.TagTypeKeys" />
+		<CysTerraInterfacePackage Include="Cryville.EEW.TTS" />
+		<CysTerraInterfacePackage Include="Cryville.Measure" />
+	</ItemGroup>
 </Project>
