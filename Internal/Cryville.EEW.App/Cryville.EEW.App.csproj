@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<Version>0.8.9</Version>
+		<Version>0.8.13</Version>
 		<RootNamespace>Cryville.EEW.Core</RootNamespace>
 	</PropertyGroup>
 
